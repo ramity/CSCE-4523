@@ -16,14 +16,13 @@ information should not appear in the result. Your output should show the
 department names and total number of trips.
 */
 
-/* Try and get rid of subqueries before submission */
-
-SELECT DISTINCT D.Name, (SELECT COUNT(*) FROM Trip T WHERE T.Emp_ID = E.ID) FROM Dept D
-LEFT JOIN Employee E
-ON E.Dept = D.Code
-LEFT JOIN Trip T
+SELECT D.Name, COUNT(T.Emp_ID)
+FROM Employee E
+JOIN Trip T
 ON T.Emp_ID = E.ID
-WHERE (SELECT COUNT(*) FROM Trip T WHERE T.Emp_ID = E.ID) > 0
+JOIN Dept D
+ON D.Code = E.Dept
+GROUP BY D.Name
 ORDER BY D.Name ASC;
 
 /*
@@ -31,11 +30,11 @@ Query the Trip table to show the number of distinct days when both a departure
 and a return occur.  Note: They need not be for the same trip.
 */
 
-/* Try and get rid of subqueries before submission */
-
-SELECT DISTINCT T1.Dep_date, (SELECT COUNT(T2.Return_date) FROM Trip T2 WHERE T2.Return_date = T1.Dep_date)
+SELECT DISTINCT T1.Dep_date, COUNT(T2.Return_date)
 FROM Trip T1
-WHERE (SELECT COUNT(T2.Return_date) FROM Trip T2 WHERE T2.Return_date = T1.Dep_date) > 0;
+JOIN Trip T2
+ON T1.Dep_date = T2.Return_date
+GROUP BY T1.Dep_date;
 
 /*
 For each approved trip, show the corresponding employee name, departure date,
@@ -43,26 +42,37 @@ name of the city the employee visited, and the receipt submission date (if
 receipt has been submitted).
 */
 
-/* Try and get rid of subqueries before submission */
+/* QUESTION: Are we required to conditionally show the row if THERE IS NOT a receipt submission date? */
 
-SELECT
-(SELECT E.Name FROM Employee E WHERE E.ID = T.Emp_ID),
-T.Dep_date,
-T.To_City,
-(SELECT Ex.Submitted FROM Expense Ex WHERE Ex.Trip_ID = T.ID)
+/* NO: */
+
+SELECT Em.Name, T.Dep_date, T.To_City, Ex.Submitted
 FROM Trip T
-WHERE (SELECT Ex.Submitted FROM Expense Ex WHERE Ex.Trip_ID = T.ID) IS NOT NULL;
+LEFT JOIN Expense Ex
+ON Ex.Trip_ID = T.ID
+JOIN Employee Em
+ON Em.ID = T.Emp_ID
+ORDER BY Em.Name ASC;
+
+/* YES: */
+
+SELECT Em.Name, T.Dep_date, T.To_City, Ex.Submitted
+FROM Trip T
+LEFT JOIN Expense Ex
+ON Ex.Trip_ID = T.ID
+JOIN Employee Em
+ON Em.ID = T.Emp_ID
+WHERE Ex.Submitted IS NOT NULL
+ORDER BY Em.Name ASC;
 
 /*
 Find out the trips for which the estimated cost is less than the actual expense
 and print those two costs along with the corresponding trip id.
 */
 
-/* Try and get rid of subqueries before submission */
-
-SELECT
-T.ID,
-T.Est_Cost,
-(SELECT E.Amount FROM Expense E WHERE E.Trip_ID = T.ID)
+Select T.ID, T.Est_Cost, E.Amount
 FROM Trip T
-WHERE (SELECT E.Amount FROM Expense E WHERE E.Trip_ID = T.ID) > T.Est_Cost;
+LEFT JOIN Expense E
+ON E.Trip_ID = T.ID
+WHERE E.Amount > T.Est_Cost
+ORDER BY T.ID ASC;
