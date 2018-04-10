@@ -5,7 +5,7 @@ day of departure and day of return both spelled out completely,
 and number of days between the departure and return.
 */
 
-SELECT E.Name, T.Dep_date, T.Return_date, (T.Return_date - T.Dep_date), TO_CHAR(T.Dep_date, 'DAY')
+SELECT E.Name, T.Dep_date, T.Return_date, TO_CHAR(T.Dep_date, 'DAY') as DAY
 FROM Trip T
 JOIN Employee E
 ON T.Emp_ID = E.ID
@@ -39,7 +39,7 @@ GROUP BY T.Return_Date;
 ACTUAL:
 */
 
-SELECT COUNT(E.ID)
+SELECT COUNT(E.ID) as Staff_Returned_Last_Weekend
 FROM Trip T
 JOIN Employee E
 ON T.Emp_ID = E.ID
@@ -66,8 +66,8 @@ SELECT
     WHEN 'T' THEN 'Transportation'
     WHEN 'H' THEN 'Hotel'
     WHEN 'M' THEN 'Meals'
-  END,
-  SUM(E.Amount)
+  END as Expense_Type,
+  SUM(E.Amount) as Total
 FROM Expense E
 GROUP BY E.Type;
 
@@ -78,7 +78,7 @@ trips. If an employee has not taken any trip, print the employee's
 name and 0 (zero) next to his name.
 */
 
-SELECT E.Name, COUNT(T.ID)
+SELECT E.Name, COUNT(T.ID) as Trip_Count
 FROM Employee E
 LEFT JOIN Trip T
 ON E.ID = T.Emp_ID
@@ -92,12 +92,12 @@ titled "Defaulters" that shows the employee name, the return date,
 and the number of days it has been since the return date for each
 employee that has violated the receipt submission policy.
 */
-
+CREATE VIEW Defaulters AS
 SELECT Em.Name, T.Return_Date,
   (CASE
-    WHEN Ex.Submitted IS NULL THEN (SYSDATE - T.Return_Date)
-    ELSE (Ex.Submitted - T.Return_Date)
-  END) as DaysDefaulted
+    WHEN Ex.Submitted IS NULL THEN TRUNC(SYSDATE - T.Return_Date)
+    ELSE TRUNC(Ex.Submitted - T.Return_Date)
+  END) as Days_Defaulted
 FROM Trip T
 JOIN Expense Ex
 ON T.ID = Ex.Trip_ID
@@ -110,3 +110,5 @@ OR
   AND
   SYSDATE - T.Return_Date  >= 10
 );
+
+SELECT * FROM Defaulters;
