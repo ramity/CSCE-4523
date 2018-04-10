@@ -70,6 +70,7 @@ titled "Defaulters" that shows the employee name, the return date,
 and the number of days it has been since the return date for each
 employee that has violated the receipt submission policy.
 */
+
 CREATE VIEW Defaulters AS
 SELECT Em.Name, T.Return_Date,
   (CASE
@@ -81,12 +82,12 @@ JOIN Expense Ex
 ON T.ID = Ex.Trip_ID
 JOIN Employee Em
 ON T.Emp_ID = Em.ID
-WHERE Ex.Submitted >= (T.Return_Date + 10)
+WHERE Ex.Submitted > (T.Return_Date + 10)
 OR
 (
   Ex.Submitted IS NULL
   AND
-  SYSDATE - T.Return_Date  >= 10
+  SYSDATE - T.Return_Date  > 10
 );
 
 SELECT * FROM Defaulters;
