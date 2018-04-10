@@ -46,6 +46,7 @@ SELECT
   END as Expense_Type,
   SUM(E.Amount) as Total
 FROM Expense E
+WHERE TO_CHAR(E.Submitted, 'YYYY') = 2017
 GROUP BY E.Type;
 
 /*
