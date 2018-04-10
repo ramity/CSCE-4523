@@ -5,7 +5,7 @@ day of departure and day of return both spelled out completely,
 and number of days between the departure and return.
 */
 
-SELECT E.Name, T.Dep_date, T.Return_date, TO_CHAR(T.Dep_date, 'DAY') as DAY
+SELECT E.Name, TO_CHAR(T.Dep_date, 'DAY') as Day_Left, TO_CHAR(T.Return_date, 'DAY') as Day_Returned, (T.Return_date - T.Dep_date) as Days_Gone
 FROM Trip T
 JOIN Employee E
 ON T.Emp_ID = E.ID
