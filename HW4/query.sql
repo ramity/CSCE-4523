@@ -17,41 +17,18 @@ Determine and print the total number of employees who returned
 from a trip during the last weekend.
 */
 
-/*
-DEBUGGING: [THIS STILL NEEDS SOME POLISH]
-*/
-
-SELECT COUNT(E.ID), T.Return_Date, TO_CHAR(T.Return_Date, 'DAY'), TO_CHAR(T.Return_Date, 'D'), SYSDATE - 7
-FROM Trip T
-JOIN Employee E
-ON T.Emp_ID = E.ID
-WHERE
-  T.Return_Date >= (SYSDATE - 7)
-  AND
-  (
-    TO_CHAR(T.Return_Date, 'D') = 1
-    OR
-    TO_CHAR(T.Return_Date, 'D') = 7
-  )
-GROUP BY T.Return_Date;
-
-/*
-ACTUAL:
-*/
-
 SELECT COUNT(E.ID) as Staff_Returned_Last_Weekend
 FROM Trip T
 JOIN Employee E
 ON T.Emp_ID = E.ID
 WHERE
-  T.Return_Date >= (SYSDATE - 7)
-  AND
-  (
-    TO_CHAR(T.Return_Date, 'D') = 1
-    OR
-    TO_CHAR(T.Return_Date, 'D') = 7
-  )
-GROUP BY T.Return_Date;
+T.Return_Date >= (SYSDATE - 7)
+AND
+(
+  TO_CHAR(T.Return_Date, 'D') = 1
+  OR
+  TO_CHAR(T.Return_Date, 'D') = 7
+);
 
 /*
 For all the receipts that were submitted in 2017, print the total
